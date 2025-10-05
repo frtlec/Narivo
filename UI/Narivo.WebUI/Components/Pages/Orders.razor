@@ -1,0 +1,118 @@
+﻿@page "/orders"
+
+@inject OrderUIService OrderService
+
+<h3 class="mb-4">Siparişlerim</h3>
+
+@if (isLoading)
+{
+    <div class="text-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Yükleniyor...</span>
+        </div>
+    </div>
+}
+else if (orders == null || orders.Count == 0)
+{
+    <div class="alert alert-info">Henüz hiç siparişiniz yok.</div>
+}
+else
+{
+    <table class="table table-striped align-middle shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Üye ID</th>
+                <th>Durum</th>
+                <th>Toplam Tutar</th>
+                <th>Ürünler</th>
+                <th>Oluşturulma T</th>
+                <th>Güncelleme T</th>
+                <th class="text-end">İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in orders)
+            {
+                <tr>
+                    <td>@order.MemberId</td>
+                    <td>@order.MemberId</td>
+                    <td>
+                        <span class="@GetStatusBadgeClass(order.Status)">
+                            @GetStatusText(order.Status)
+                        </span>
+                    </td>
+                    <td>@order.TotalPrice.ToString("C")</td>
+                    <td>
+                        <details>
+                            <summary class="text-primary" style="cursor:pointer;">Ürünleri Gör</summary>
+                            <ul class="mt-2 mb-0">
+                                @foreach (var item in order.Items)
+                                {
+                                    <li>@item.ProductName (@item.Quantity adet)</li>
+                                }
+                            </ul>
+                        </details>
+                    </td>
+                    <td>@order.CreatedAt.ToString("g")</td>
+                    <td>@order.UpdatedAt.ToString("g")</td>
+                    <td class="text-end">
+                        @if (order.Status == OrderStatus.Pending)
+                        {
+                            <button class="btn btn-success btn-sm" @onclick="() => CheckoutUIService.Checkout(order.Id)">Öde</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-secondary btn-sm" disabled>Ödendi</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<OrderDto>? orders;
+    private bool isLoading = true;
+    private int memberId; // test için sabit
+
+    protected override async Task OnInitializedAsync()
+    {
+        memberId = AppState.MemberId;
+        try
+        {
+            orders = await OrderService.GetAllByMemberId(memberId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Siparişler alınamadı: " + ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "badge bg-warning text-dark",
+            OrderStatus.Paid => "badge bg-success",
+            _ => "badge bg-secondary"
+        };
+    }
+
+    private string GetStatusText(OrderStatus status)
+    {
+        return status.ToDescription();
+    }
+
+    private async Task PayOrder(OrderDto order)
+    {
+        // Gerçek senaryoda API veya Kafka event tetiklenebilir
+        order.Status = OrderStatus.Paid;
+        StateHasChanged();
+    }
+}

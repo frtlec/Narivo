@@ -1,0 +1,67 @@
+﻿
+
+
+<div class="basket-sheet @(AppState.BasketBottomSheetIsOpen ? "open" : "")">
+    <div class="basket-header">
+        <span>Sepet</span>
+        <div>
+            <button class="btn btn-sm btn-danger me-2" @onclick="ClearBasket">Temizle</button>
+            <button class="close-btn" @onclick="Toggle">&times;</button>
+        </div>
+    </div>
+    <div class="basket-body">
+        @if (!BasketService.GetBasketItems().Any())
+        {
+            <p>Sepet boş.</p>
+        }
+        else
+        {
+            @foreach (var item in BasketService.GetBasketItems())
+            {
+                <div class="basket-item">
+                    <span>@item.ProductName x @item.Quantity</span>
+                    <span>@(item.UnitPrice* item.Quantity) ₺</span>
+                </div>
+            }
+        }
+    </div>
+    <div class="basket-footer">
+        <p>
+            Toplam: @BasketService.GetBasketItems().Sum(i => i.UnitPrice * i.Quantity) ₺
+        </p>
+        <button class="btn btn-success w-100" @onclick="CheckoutUIService.CheckoutBasket">Siparişi Tamamla</button>
+    </div>
+</div>
+
+@if (!AppState.BasketBottomSheetIsOpen)
+{
+    <button class="open-basket-btn" @onclick="Toggle">Sepeti Aç</button>
+}
+
+@code {
+    private int MemberId;
+    protected override void OnInitialized()
+    {
+        BasketService.OnChange += StateHasChanged;
+        BasketService.OnOpenBasket += OpenBasketFromService;
+    }
+
+    private void OpenBasketFromService()
+    {
+        AppState.SetBasketBottomSheetIsOpen(true);
+        StateHasChanged();
+    }
+
+    private void Toggle() => AppState.SetBasketBottomSheetIsOpen(!AppState.BasketBottomSheetIsOpen);
+
+    private void ClearBasket()
+    {
+        BasketService.ClearBasket();
+    }
+
+    public void Dispose()
+    {
+        BasketService.OnChange -= StateHasChanged;
+        BasketService.OnOpenBasket -= OpenBasketFromService;
+    }
+}

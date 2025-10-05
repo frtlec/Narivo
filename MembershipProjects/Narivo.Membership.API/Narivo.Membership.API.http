@@ -1,0 +1,6 @@
+@Narivo.Membership.API_HostAddress = http://localhost:5228
+
+GET {{Narivo.Membership.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

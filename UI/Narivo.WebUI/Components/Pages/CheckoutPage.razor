@@ -1,0 +1,142 @@
+﻿@page "/checkout/{OrderId:int}"
+@using Narivo.Checkout.Core.Business.Dtos.ResponseDtos
+@inject OrderUIService OrderService
+@inject MemberUIService MemberService
+@inject IJSRuntime JS
+
+<h3 class="page-title">Ödeme Sayfası</h3>
+
+@if (order == null || member == null)
+{
+    <p><em>Yükleniyor...</em></p>
+}
+else
+{
+    <div class="checkout-container container my-5">
+        <div class="row">
+            <!-- Sol: Üye ve Ödeme Bilgileri -->
+            <div class="col-lg-8 col-md-7 col-sm-12 mb-2">
+                <div class="shadow p-4 rounded bg-light">
+                    <h5 class="section-title mb-3 text-primary">
+                        <i class="bi bi-person-fill me-2"></i>Üye Bilgileri
+                    </h5>
+
+                    <div class="form-group mb-4">
+                        <label><i class="bi bi-person-circle me-1"></i> Ad Soyad</label>
+                        <input class="form-control disabled"  @bind="MemberName" disabled/>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label><i class="bi bi-envelope-fill me-1"></i> Email</label>
+                        <input class="form-control" @bind="MemberEmail" />
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label><i class="bi bi-telephone-fill me-1"></i> Telefon</label>
+                        <input class="form-control" @bind="MemberPhone" />
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label><i class="bi bi-geo-alt-fill me-1"></i> Adres</label>
+                        <select class="form-select" @bind="SelectedAddressId">
+                            @foreach (var addr in member.Addresses)
+                            {
+                                <option value="@addr.Id">
+                                    @addr.City / @addr.County / @addr.Town - @addr.BuildingNo @addr.FlatNumber
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <h5 class="section-title text-primary mb-3">
+                        <i class="bi bi-credit-card-fill me-2"></i>Ödeme Yöntemi
+                    </h5>
+
+                    <select class="form-select mb-4" @bind="SelectedCardId">
+                        @foreach (var card in member.Cards)
+                        {
+                            <option value="@card.Id">
+                                @card.Bank - **** **** **** @card.No[^4..]
+                            </option>
+                        }
+                    </select>
+
+                    <div class="text-center mt-4">
+                        <button class="btn btn-success w-75" @onclick="PayOrder">
+                            <i class="bi bi-bag-check-fill me-1"></i> Ödemeyi Tamamla
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ: Sipariş Özeti -->
+            <div class="col-lg-4 col-md-5 col-sm-12">
+                <div class="shadow p-4 rounded bg-white sticky-top" style="top: 80px;">
+                    <h5 class="section-title text-primary">
+                        <i class="bi bi-list-ul me-2"></i>Sipariş Özeti
+                    </h5>
+                    <ul class="order-items list-unstyled mt-3">
+                        @foreach (var item in order.Items)
+                        {
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>
+                                    <i class="bi bi-box-seam me-2 text-secondary"></i>
+                                    @item.ProductName x @item.Quantity
+                                </span>
+                                <span class="fw-bold">@($"{item.Price * item.Quantity:C}")</span>
+                            </li>
+                        }
+                </ul>
+                <hr />
+                <p class="total text-end fs-5">
+                    <strong>Toplam: @($"{order.TotalPrice:C}")</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+}
+@code {
+    [Parameter] public int OrderId { get; set; }
+    private OrderDto order;
+    private MemberDto member;
+
+    private string MemberName;
+    private string MemberEmail;
+    private string MemberPhone;
+
+    private int SelectedAddressId;
+    private int SelectedCardId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        order = await OrderService.Get(OrderId);
+        member = await MemberService.Get(order.MemberId);
+
+        // Üye bilgileri
+        MemberName = member.Name + " " + member.SurName;
+        MemberEmail = member.Email;
+        MemberPhone = member.PhoneNumber;
+
+        // Default adres ve kart
+        SelectedAddressId = member.Addresses.FirstOrDefault(a => a.IsDefault)?.Id ?? member.Addresses.First().Id;
+        SelectedCardId = member.Cards.FirstOrDefault(c => c.IsDefault)?.Id ?? member.Cards.First().Id;
+    }
+
+    private async Task PayOrder()
+    {
+
+      var result = await CheckoutUIService.StartCheckout(new Checkout.Core.Business.Dtos.RequestDtos.CheckoutRequestDto()
+       {
+           OrderId = OrderId,
+           SelectedAddressId = SelectedAddressId,
+           SelectedCardId = SelectedCardId,
+           Email = MemberEmail,
+           Phone = MemberPhone
+       });
+
+        if (result == false)
+            await JS.InvokeVoidAsync("alert", "Ödeme işlemi başlatılamadı");
+    }
+}

@@ -1,0 +1,73 @@
+﻿@page "/products"
+
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+@inject BasketService BasketService
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int MemberId { get; set; }
+
+    private List<ProductDto> products;
+    private Dictionary<int, int> quantities = new(); // ürünId => adet
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await ProductService.GetProducts();
+        foreach (var p in products)
+        {
+            quantities[p.Id] = 1; // default quantity
+        }
+    }
+
+    private void AddToBasket(ProductDto product)
+    {
+        BasketService.AddToBasket(new BasketItem
+        {
+            ProductId = product.Id,
+            ProductName = product.Name,
+            UnitPrice = product.UnitPrice,
+            Quantity = quantities[product.Id],
+            MemberId = MemberId
+        });
+    }
+
+}
+
+<h3>Products</h3>
+
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.UnitPrice</td>
+                    <td>@product.Stock</td>
+                    <td>
+                        <input type="number" min="1" max="@product.Stock" @bind="quantities[product.Id]" style="width:60px" />
+                    </td>
+                    <td>
+                        <button class="btn btn-success" @onclick="() => AddToBasket(product)">Sepete Ekle</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

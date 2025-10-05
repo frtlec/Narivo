@@ -1,0 +1,112 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CheckoutProjects", "CheckoutProjects", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MembershipProjects", "MembershipProjects", "{D7D70EBA-FB51-4857-8D0E-02261ECE9E79}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SubscriptionProjects", "SubscriptionProjects", "{3FD677C0-8103-49E5-AA4B-704E46F43DDF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{87F65A7D-436B-465F-879C-A5B445ABCA2F}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CatalogProjects", "CatalogProjects", "{56028649-3C39-4516-AE37-A980796E29FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.Catalog.API", "CatalogProjects\Narivo.Catalog.API\Narivo.Catalog.API.csproj", "{A9F5AFF5-29B9-4914-963B-669664E18977}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.Checkout.API", "CheckoutProjects\Narivo.Checkout.API\Narivo.Checkout.API.csproj", "{4042B6A3-DCF4-4A5F-9E41-F3029E342DC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.Checkout.Core", "CheckoutProjects\Narivo.Checkout.Core\Narivo.Checkout.Core.csproj", "{165DA723-49CC-4C37-AA78-031CC8DCF99B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.Membership.API", "MembershipProjects\Narivo.Membership.API\Narivo.Membership.API.csproj", "{13F783A1-C587-4A27-A526-C2BC2E0BC192}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.Subscription.Job", "SubscriptionProjects\Narivo.Subscription.Job\Narivo.Subscription.Job.csproj", "{6EC214C0-C368-4644-91C8-5CAA53E93AC9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{F5FCA61E-8DED-4573-BA43-94664ED46536}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.Shared", "Shared\Narivo.Shared\Narivo.Shared.csproj", "{D44F1AA5-4456-40C1-ADD9-722EE31A63B4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FakeMyPayNetApi", "FakeMyPayNetApi", "{B5EADC3B-B481-433B-90BB-F2FA2226CE0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyPaynetApi", "MyPaynetApi\MyPaynetApi.csproj", "{F326E60E-A660-410C-A2FE-E35D15282149}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.Checkout.Consumer", "CheckoutProjects\Narivo.Checkout.Consumer\Narivo.Checkout.Consumer.csproj", "{88AC048F-A2D1-4931-919C-066506DF0E50}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{2294CBD9-EB8C-46F0-BBAA-E0FC8C3CC868}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.WebUI", "UI\Narivo.WebUI\Narivo.WebUI.csproj", "{47915429-7FBB-433C-8B95-BB1BD62A97B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Orchestrator", "Orchestrator", "{2B946736-2752-4DFE-AAC7-3503743F00AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.Orchestrator", "Orchestrator\Narivo.Orchestrator\Narivo.Orchestrator.csproj", "{82989858-A4FD-45F6-B420-391DC3D2867F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A9F5AFF5-29B9-4914-963B-669664E18977}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9F5AFF5-29B9-4914-963B-669664E18977}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9F5AFF5-29B9-4914-963B-669664E18977}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9F5AFF5-29B9-4914-963B-669664E18977}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4042B6A3-DCF4-4A5F-9E41-F3029E342DC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4042B6A3-DCF4-4A5F-9E41-F3029E342DC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4042B6A3-DCF4-4A5F-9E41-F3029E342DC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4042B6A3-DCF4-4A5F-9E41-F3029E342DC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{165DA723-49CC-4C37-AA78-031CC8DCF99B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{165DA723-49CC-4C37-AA78-031CC8DCF99B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{165DA723-49CC-4C37-AA78-031CC8DCF99B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{165DA723-49CC-4C37-AA78-031CC8DCF99B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13F783A1-C587-4A27-A526-C2BC2E0BC192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13F783A1-C587-4A27-A526-C2BC2E0BC192}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13F783A1-C587-4A27-A526-C2BC2E0BC192}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13F783A1-C587-4A27-A526-C2BC2E0BC192}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EC214C0-C368-4644-91C8-5CAA53E93AC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EC214C0-C368-4644-91C8-5CAA53E93AC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EC214C0-C368-4644-91C8-5CAA53E93AC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EC214C0-C368-4644-91C8-5CAA53E93AC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D44F1AA5-4456-40C1-ADD9-722EE31A63B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D44F1AA5-4456-40C1-ADD9-722EE31A63B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D44F1AA5-4456-40C1-ADD9-722EE31A63B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D44F1AA5-4456-40C1-ADD9-722EE31A63B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F326E60E-A660-410C-A2FE-E35D15282149}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F326E60E-A660-410C-A2FE-E35D15282149}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F326E60E-A660-410C-A2FE-E35D15282149}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F326E60E-A660-410C-A2FE-E35D15282149}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88AC048F-A2D1-4931-919C-066506DF0E50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88AC048F-A2D1-4931-919C-066506DF0E50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88AC048F-A2D1-4931-919C-066506DF0E50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88AC048F-A2D1-4931-919C-066506DF0E50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47915429-7FBB-433C-8B95-BB1BD62A97B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47915429-7FBB-433C-8B95-BB1BD62A97B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47915429-7FBB-433C-8B95-BB1BD62A97B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47915429-7FBB-433C-8B95-BB1BD62A97B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82989858-A4FD-45F6-B420-391DC3D2867F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82989858-A4FD-45F6-B420-391DC3D2867F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82989858-A4FD-45F6-B420-391DC3D2867F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82989858-A4FD-45F6-B420-391DC3D2867F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A9F5AFF5-29B9-4914-963B-669664E18977} = {56028649-3C39-4516-AE37-A980796E29FE}
+		{4042B6A3-DCF4-4A5F-9E41-F3029E342DC7} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{165DA723-49CC-4C37-AA78-031CC8DCF99B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{13F783A1-C587-4A27-A526-C2BC2E0BC192} = {D7D70EBA-FB51-4857-8D0E-02261ECE9E79}
+		{6EC214C0-C368-4644-91C8-5CAA53E93AC9} = {3FD677C0-8103-49E5-AA4B-704E46F43DDF}
+		{D44F1AA5-4456-40C1-ADD9-722EE31A63B4} = {F5FCA61E-8DED-4573-BA43-94664ED46536}
+		{F326E60E-A660-410C-A2FE-E35D15282149} = {B5EADC3B-B481-433B-90BB-F2FA2226CE0B}
+		{88AC048F-A2D1-4931-919C-066506DF0E50} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{47915429-7FBB-433C-8B95-BB1BD62A97B7} = {2294CBD9-EB8C-46F0-BBAA-E0FC8C3CC868}
+		{82989858-A4FD-45F6-B420-391DC3D2867F} = {2B946736-2752-4DFE-AAC7-3503743F00AB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2FED4207-0AAA-41E8-A07D-827C62A1A6E6}
+	EndGlobalSection
+EndGlobal
