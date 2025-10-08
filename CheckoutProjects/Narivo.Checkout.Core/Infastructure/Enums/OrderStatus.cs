@@ -8,10 +8,19 @@ public enum OrderStatus
     Pending = 1,
     [Description("Ödendi")]
     Paid = 2,
+    [Description("Tamamlandı")]
+    Completed = 3
+}
+public enum OrderItemStatus
+{
+    [Description("Beklemede")]
+    Pending = 1,
+    [Description("Ödendi")]
+    Paid = 2,
     [Description("Kargoda")]
     Shipped = 3,
     [Description("Teslim Edildi")]
-    Completed = 4,
+    Delivered = 4,
     [Description("İptal Edildi")]
     Cancelled = 5
 }

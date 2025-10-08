@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using MyPayNetApi.Models;
+using Narivo.Shared.Extensions;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +16,7 @@ builder.Services.AddDbContext<MyPayNetApiDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+builder.Services.AddTelemetry("MyPaynetApi");
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

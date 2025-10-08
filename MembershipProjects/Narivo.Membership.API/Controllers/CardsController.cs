@@ -5,7 +5,7 @@ using Narivo.Membership.API.Infastructure.Persistence;
 
 namespace Narivo.Membership.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 [ApiController]
 public class CardsController : ControllerBase
 {

@@ -20,4 +20,5 @@ namespace Narivo.WebUI.HttpClients
         [Post("/api/checkout/start")]
         Task<ApiResponse<bool>> Start([FromBody] CheckoutRequestDto checkoutRequestDto);
     }
+
 }

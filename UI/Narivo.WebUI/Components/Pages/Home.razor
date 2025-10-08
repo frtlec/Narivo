@@ -1,7 +1,53 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager Navigation
 
 <PageTitle>Home</PageTitle>
+<h3>SignalR Test</h3>
 
-<h1>Hello, world!</h1>
+<input @bind="message" placeholder="Message" />
+<button @onclick="SendMessage">Send</button>
 
-Welcome to your new app.
+<ul>
+    @foreach (var msg in messages)
+    {
+        <li>@msg</li>
+    }
+</ul>
+@code {
+    private HubConnection hubConnection;
+    private string message;
+    private List<string> messages = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7073/simpleHub")
+            .WithAutomaticReconnect()
+            .Build();
+
+        hubConnection.On<string>("ReceiveMessage", (msg) =>
+        {
+            messages.Add(msg);
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            try
+            {
+                await hubConnection.InvokeAsync("SendMessage", message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            message = "";
+        }
+    }
+}

@@ -38,6 +38,12 @@ builder.Services.AddRefitClient<ICheckoutApiClient>()
         c.BaseAddress = new Uri(builder.Configuration.GetSection("CheckoutApiConfig:BaseUrl").Value ?? string.Empty);
     });
 
+builder.Services.AddRefitClient<IShippingApiClient>()
+    .ConfigureHttpClient(c =>
+    {
+        c.BaseAddress = new Uri(builder.Configuration.GetSection("ShippingApiConfig:BaseUrl").Value ?? string.Empty);
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

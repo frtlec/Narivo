@@ -19,15 +19,5 @@
     <Routes @rendermode="InteractiveServer" />
     <script src="_framework/blazor.web.js"></script>
 </body>
-<ErrorBoundary>
-    <ChildContent>
-        <Router AppAssembly="@typeof(App).Assembly" />
-    </ChildContent>
-    <ErrorContent>
-        <div class="alert alert-danger m-3 p-3 rounded">
-            <strong>Hata oluştu:</strong> Bir şeyler yanlış gitti. Lütfen tekrar deneyin.
-        </div>
-    </ErrorContent>
-</ErrorBoundary>
 </html>
 

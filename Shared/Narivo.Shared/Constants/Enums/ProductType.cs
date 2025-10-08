@@ -2,7 +2,7 @@
 
 public enum ProductType
 {
-    Physical,
+    Physical=1,
     Digital,
     Membership
 }

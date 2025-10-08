@@ -32,4 +32,14 @@ public class MembersController : ControllerBase
             return NotFound();
         return Ok(new MemberDto(member));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetByIdAndAddressId([FromQuery] int id, [FromQuery] int addressId)
+    {
+        var member = await _memberDbContext.Members.Include(f => f.Addresses.Where(f => f.Id == addressId)).FirstOrDefaultAsync(f => f.Id == id);
+        if (member == null || member.Addresses.Any() == false)
+            return NotFound("Üye bulunamadı");
+        return Ok(new GetByIdAndAddressIdDto(member, member.Addresses.First()));
+    }
+
 }

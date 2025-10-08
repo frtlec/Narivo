@@ -1,39 +1,10 @@
 ﻿@page "/products"
-
+@using Narivo.Checkout.Core.Business.Dtos.RequestDtos
 @inject IProductService ProductService
 @inject NavigationManager NavigationManager
 @inject BasketService BasketService
-
-@code {
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public int MemberId { get; set; }
-
-    private List<ProductDto> products;
-    private Dictionary<int, int> quantities = new(); // ürünId => adet
-
-    protected override async Task OnInitializedAsync()
-    {
-        products = await ProductService.GetProducts();
-        foreach (var p in products)
-        {
-            quantities[p.Id] = 1; // default quantity
-        }
-    }
-
-    private void AddToBasket(ProductDto product)
-    {
-        BasketService.AddToBasket(new BasketItem
-        {
-            ProductId = product.Id,
-            ProductName = product.Name,
-            UnitPrice = product.UnitPrice,
-            Quantity = quantities[product.Id],
-            MemberId = MemberId
-        });
-    }
-
-}
+@inject IJSRuntime JS
+@inject OrderUIService OrderUIService
 
 <h3>Products</h3>
 
@@ -43,31 +14,180 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Quantity</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var product in products)
+    <ul class="nav nav-tabs">
+        @foreach (var type in productGroups.Keys)
+        {
+            <li class="nav-item">
+                <button class="nav-link @(activeTab == type ? "active" : "")" @onclick="() => activeTab = type">
+                    @type
+                </button>
+            </li>
+        }
+    </ul>
+
+    <div class="tab-content mt-3">
+        @foreach (var type in productGroups.Keys)
+        {
+            <div class="tab-pane @(activeTab == type ? "active show" : "")">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            @if (type != ProductType.Membership)
+                            {
+                                <th>Quantity</th>
+                            }
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in productGroups[type])
+                        {
+                            <tr>
+                                <td>@product.Name</td>
+                                <td>@product.UnitPrice</td>
+                                <td>@product.Stock</td>
+                                @if (product.ProductType != ProductType.Membership)
+                                {
+                                    <td>
+                                        <input type="number" min="1" max="@product.Stock" @bind="quantities[product.Id]" style="width:60px" />
+                                    </td>
+                                }
+                                <td>
+                                    @if (product.ProductType == ProductType.Membership)
+                                    {
+                                        <button class="btn btn-primary" @onclick="() => PurchaseMembership(product)">
+                                            Sipariş Oluştur
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-success" @onclick="() => AddToBasket(product)">
+                                            Sepete Ekle
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int MemberId { get; set; }
+
+    private List<ProductDto> products;
+    private Dictionary<int, int> quantities = new();
+    private Dictionary<ProductType, List<ProductDto>> productGroups = new();
+    private ProductType activeTab;
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await ProductService.GetProducts();
+
+        foreach (var p in products)
+        {
+            quantities[p.Id] = 1; // default quantity
+        }
+
+        productGroups = products
+            .GroupBy(p => p.ProductType)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        if (productGroups.Any())
+        {
+            activeTab = productGroups.Keys.First();
+        }
+    }
+
+    // Membership ürünü için direkt sipariş oluştur
+    private async Task PurchaseMembership(ProductDto product)
+    {
+        var request = new CreateOrderRequestDto
+        {
+            MemberId = AppState.MemberId,
+            Items = new List<CreateOrderRequestDto.Item>
             {
-                <tr>
-                    <td>@product.Name</td>
-                    <td>@product.UnitPrice</td>
-                    <td>@product.Stock</td>
-                    <td>
-                        <input type="number" min="1" max="@product.Stock" @bind="quantities[product.Id]" style="width:60px" />
-                    </td>
-                    <td>
-                        <button class="btn btn-success" @onclick="() => AddToBasket(product)">Sepete Ekle</button>
-                    </td>
-                </tr>
+                new CreateOrderRequestDto.Item
+                {
+                    ProductId = product.Id,
+                    Quantity = 1
+                }
             }
-        </tbody>
-    </table>
+        };
+
+        var orderId = await OrderUIService.CreateOrder(request);
+
+        if (orderId.HasValue)
+        {
+            await CheckoutUIService.Checkout(orderId.Value);
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Sipariş oluşturulamadı!");
+        }
+    }
+
+    // Physical / Digital ürünler sepete eklenir
+    private async Task AddToBasket(ProductDto product)
+    {
+        var basketItems = BasketService.GetBasketItems();
+
+        // Sepette farklı tür varsa uyarı
+        if (basketItems.Any() && basketItems.Any(i => i.ProductType != product.ProductType))
+        {
+            bool confirm = await JS.InvokeAsync<bool>("confirm",
+                "Sepetinizde farklı bir ürün türü var. Sepeti temizleyip devam etmek ister misiniz?");
+
+            if (!confirm)
+                return;
+
+            BasketService.ClearBasket();
+        }
+
+        BasketService.AddToBasket(new BasketItem
+        {
+            ProductId = product.Id,
+            ProductName = product.Name,
+            UnitPrice = product.UnitPrice,
+            Quantity = quantities[product.Id],
+            MemberId = MemberId,
+            ProductType = product.ProductType
+        });
+    }
+
+    // Sepetteki ürünlerle toplu checkout
+    private async Task CheckoutBasket()
+    {
+        var basketItems = BasketService.GetBasketItems();
+
+        var request = new CreateOrderRequestDto
+        {
+            MemberId = MemberId,
+            Items = basketItems.Select(i => new CreateOrderRequestDto.Item
+            {
+                ProductId = i.ProductId,
+                Quantity = i.Quantity
+            }).ToList()
+        };
+
+        var orderId = await OrderUIService.CreateOrder(request);
+
+        if (orderId.HasValue)
+        {
+            await JS.InvokeVoidAsync("alert", $"Sipariş oluşturuldu! OrderId: {orderId}");
+            BasketService.ClearBasket();
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Sipariş oluşturulamadı!");
+        }
+    }
 }

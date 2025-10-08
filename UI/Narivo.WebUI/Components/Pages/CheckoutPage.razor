@@ -1,8 +1,11 @@
 ﻿@page "/checkout/{OrderId:int}"
+@using Microsoft.AspNetCore.SignalR.Client
+@using Narivo.Checkout.Core.Business.Dtos.RequestDtos
 @using Narivo.Checkout.Core.Business.Dtos.ResponseDtos
 @inject OrderUIService OrderService
 @inject MemberUIService MemberService
 @inject IJSRuntime JS
+@inject NavigationManager Navigation
 
 <h3 class="page-title">Ödeme Sayfası</h3>
 
@@ -23,7 +26,7 @@ else
 
                     <div class="form-group mb-4">
                         <label><i class="bi bi-person-circle me-1"></i> Ad Soyad</label>
-                        <input class="form-control disabled"  @bind="MemberName" disabled/>
+                        <input class="form-control disabled" @bind="MemberName" disabled />
                     </div>
 
                     <div class="form-group mb-4">
@@ -86,22 +89,22 @@ else
                                 <span class="fw-bold">@($"{item.Price * item.Quantity:C}")</span>
                             </li>
                         }
-                </ul>
-                <hr />
-                <p class="total text-end fs-5">
-                    <strong>Toplam: @($"{order.TotalPrice:C}")</strong>
-                </p>
+                    </ul>
+                    <hr />
+                    <p class="total text-end fs-5">
+                        <strong>Toplam: @($"{order.TotalPrice:C}")</strong>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 }
 @code {
     [Parameter] public int OrderId { get; set; }
     private OrderDto order;
     private MemberDto member;
-
+    private HubConnection hubConnection;
     private string MemberName;
     private string MemberEmail;
     private string MemberPhone;
@@ -126,17 +129,39 @@ else
 
     private async Task PayOrder()
     {
-
-      var result = await CheckoutUIService.StartCheckout(new Checkout.Core.Business.Dtos.RequestDtos.CheckoutRequestDto()
-       {
-           OrderId = OrderId,
-           SelectedAddressId = SelectedAddressId,
-           SelectedCardId = SelectedCardId,
-           Email = MemberEmail,
-           Phone = MemberPhone
-       });
+        string correlationId = Guid.NewGuid().ToString();
+        var result = await CheckoutUIService.StartCheckout(new Checkout.Core.Business.Dtos.RequestDtos.CheckoutRequestDto()
+        {
+            OrderId = OrderId,
+            SelectedAddressId = SelectedAddressId,
+            SelectedCardId = SelectedCardId,
+            Email = MemberEmail,
+            Phone = MemberPhone,
+            CorrelationId = correlationId
+        });
 
         if (result == false)
             await JS.InvokeVoidAsync("alert", "Ödeme işlemi başlatılamadı");
+
+
+
+        hubConnection = new HubConnectionBuilder()
+               .WithUrl("https://localhost:7073/checkoutHub")
+               .WithAutomaticReconnect()
+               .Build();
+
+        // Mesaj alındığında tetiklenecek method
+        hubConnection.On<CheckoutSendResultToClient>("ReceiveCheckoutResult", async result =>
+        {
+            if (result.IsSuccess)
+                await JS.InvokeVoidAsync("alert", result.Message);
+            else
+                await JS.InvokeVoidAsync("alert", $"Ödeme yapılamadı, {result.Message}");
+        });
+
+        await hubConnection.StartAsync();
+
+        // Gruba katıl
+        await hubConnection.InvokeAsync("JoinGroup", correlationId);
     }
 }

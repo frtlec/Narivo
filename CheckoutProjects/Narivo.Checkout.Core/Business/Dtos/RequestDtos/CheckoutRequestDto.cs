@@ -13,4 +13,13 @@ public class CheckoutRequestDto
     public string Phone { get; set; }
     public int SelectedCardId { get; set; }
     public int SelectedAddressId { get; set; }
+    public string CorrelationId { get; set; }
+}
+
+
+public class CheckoutSendResultToClient
+{
+    public bool IsSuccess { get; set; }
+    public string Message { get; set; }
+    public string CorrelationId { get; set; }
 }

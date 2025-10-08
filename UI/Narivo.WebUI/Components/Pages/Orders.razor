@@ -1,5 +1,4 @@
 ﻿@page "/orders"
-
 @inject OrderUIService OrderService
 
 <h3 class="mb-4">Siparişlerim</h3>
@@ -26,6 +25,7 @@ else
                 <th>Durum</th>
                 <th>Toplam Tutar</th>
                 <th>Ürünler</th>
+                <th>Kargo Kodu</th>
                 <th>Oluşturulma T</th>
                 <th>Güncelleme T</th>
                 <th class="text-end">İşlem</th>
@@ -35,11 +35,11 @@ else
             @foreach (var order in orders)
             {
                 <tr>
-                    <td>@order.MemberId</td>
+                    <td>@order.Id</td>
                     <td>@order.MemberId</td>
                     <td>
                         <span class="@GetStatusBadgeClass(order.Status)">
-                            @GetStatusText(order.Status)
+                            @order.StatusText
                         </span>
                     </td>
                     <td>@order.TotalPrice.ToString("C")</td>
@@ -49,10 +49,28 @@ else
                             <ul class="mt-2 mb-0">
                                 @foreach (var item in order.Items)
                                 {
-                                    <li>@item.ProductName (@item.Quantity adet)</li>
+                                    <li>
+                                        @item.ProductName (@item.Quantity adet)
+                                        <span class="@GetItemStatusBadgeClass(item.Status)">
+                                            @item.StatusText
+                                        </span>
+                                    </li>
                                 }
                             </ul>
                         </details>
+                    </td>
+                    <td>
+                        @if (string.IsNullOrEmpty(order.ShipmentTrackingCode))
+                        {
+                            <button class="btn btn-dark btn-sm"
+                                    @onclick="() => OpenShipmentModal(order)">
+                                Kargo Kodu Gir
+                            </button>
+                        }
+                        else
+                        {
+                            <span>@order.ShipmentTrackingCode</span>
+                        }
                     </td>
                     <td>@order.CreatedAt.ToString("g")</td>
                     <td>@order.UpdatedAt.ToString("g")</td>
@@ -72,16 +90,58 @@ else
     </table>
 }
 
+<!-- 🚚 Kargo Kodu Girişi Modal -->
+@if (showShipmentModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kargo Kodu Gir</h5>
+                    <button type="button" class="btn-close" @onclick="CloseShipmentModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Sipariş ID:</strong> @selectedOrder?.Id</p>
+                    <div class="mb-3">
+                        <label class="form-label">Kargo Takip Kodu</label>
+                        <InputText class="form-control" @bind-Value="shipmentCode" />
+                    </div>
+                    @if(string.IsNullOrEmpty(shipmentErrorMessage)==false){
+                        <div class="alert alert-danger">
+                            @shipmentErrorMessage
+                        </div>
+                    }
+                    @if (string.IsNullOrEmpty(shipmentSuccessMessage) == false)
+                    {
+                        <div class="alert alert-success">
+                            @shipmentSuccessMessage
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseShipmentModal">İptal</button>
+                    <button class="btn btn-primary" @onclick="SaveShipmentCode">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private List<OrderDto>? orders;
     private bool isLoading = true;
-    private int memberId; // test için sabit
+
+    private bool showShipmentModal = false;
+    private string? shipmentSuccessMessage = null;
+    private string? shipmentErrorMessage = null;
+    private OrderDto? selectedOrder;
+    private string shipmentCode = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        memberId = AppState.MemberId;
         try
         {
+            var memberId = AppState.MemberId;
             orders = await OrderService.GetAllByMemberId(memberId);
         }
         catch (Exception ex)
@@ -94,25 +154,60 @@ else
         }
     }
 
-    private string GetStatusBadgeClass(OrderStatus status)
+    private void OpenShipmentModal(OrderDto order)
     {
-        return status switch
+        selectedOrder = order;
+        shipmentCode = string.Empty;
+        showShipmentModal = true;
+    }
+
+    private void CloseShipmentModal()
+    {
+        showShipmentModal = false;
+    }
+
+    private async Task SaveShipmentCode()
+    {
+        if (selectedOrder == null || string.IsNullOrWhiteSpace(shipmentCode))
+            return;
+
+        shipmentSuccessMessage = null;
+        shipmentErrorMessage = null;
+        try
         {
-            OrderStatus.Pending => "badge bg-warning text-dark",
-            OrderStatus.Paid => "badge bg-success",
-            _ => "badge bg-secondary"
-        };
+            // API'ye kaydet
+            await OrderService.UpdateShipmentCode(selectedOrder.Id, shipmentCode);
+
+            // UI güncelle
+            selectedOrder.ShipmentTrackingCode = shipmentCode;
+            shipmentSuccessMessage = $"Kargo kodu başarıyla tanımlandı";
+
+        }
+        catch (Exception ex)
+        {
+            shipmentErrorMessage = "Kargo kodu kaydedilemedi: " + ex.Message;
+        }
+        finally
+        {
+            // CloseShipmentModal();
+            // StateHasChanged();
+        }
     }
 
-    private string GetStatusText(OrderStatus status)
+    private string GetStatusBadgeClass(OrderStatus status) => status switch
     {
-        return status.ToDescription();
-    }
+        OrderStatus.Pending => "badge bg-warning text-dark",
+        OrderStatus.Paid => "badge bg-primary",
+        OrderStatus.Completed => "badge bg-success",
+        _ => "badge bg-secondary"
+    };
 
-    private async Task PayOrder(OrderDto order)
+    private string GetItemStatusBadgeClass(OrderItemStatus status) => status switch
     {
-        // Gerçek senaryoda API veya Kafka event tetiklenebilir
-        order.Status = OrderStatus.Paid;
-        StateHasChanged();
-    }
+        OrderItemStatus.Pending => "badge bg-warning text-dark",
+        OrderItemStatus.Paid => "badge bg-primary",
+        OrderItemStatus.Shipped => "badge bg-info text-dark",
+        OrderItemStatus.Delivered => "badge bg-success",
+        _ => "badge bg-secondary"
+    };
 }

@@ -7,12 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.9" />
     <PackageReference Include="Refit" Version="8.0.0" />
     <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\CheckoutProjects\Narivo.Checkout.Core\Narivo.Checkout.Core.csproj" />
+    <ProjectReference Include="..\..\ShippingProjects\Narivo.Shipping.Core\Narivo.Shipping.Core.csproj" />
   </ItemGroup>
 
 </Project>

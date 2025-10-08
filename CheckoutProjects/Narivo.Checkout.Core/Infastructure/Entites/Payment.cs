@@ -13,6 +13,10 @@ public class Payment : BaseEntity
 
     [StringLength(500)]
     public string ErrorMessage { get; set; }
+    [StringLength(50)]
+    public string? TransactionId { get; set; }
+
+    public int CardId { get; set; }
 
     public virtual Order Order { get; set; }
 }

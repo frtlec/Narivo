@@ -59,6 +59,11 @@ namespace Narivo.Membership.API.Migrations
                     b.Property<int>("MemberId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Town")
                         .IsRequired()
                         .HasMaxLength(100)

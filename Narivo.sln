@@ -44,6 +44,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Orchestrator", "Orchestrato
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.Orchestrator", "Orchestrator\Narivo.Orchestrator\Narivo.Orchestrator.csproj", "{82989858-A4FD-45F6-B420-391DC3D2867F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ShippingProjects", "ShippingProjects", "{F704F82B-5778-40A4-B98D-BF7674F6615E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.ShippingApi", "ShippingProjects\Narivo.ShippingApi\Narivo.ShippingApi.csproj", "{F3E1AB37-32AF-4EC6-828C-F6FF04CE9307}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakeShippingCompanyApi", "ShippingProjects\FakeShippingCompanyApi\FakeShippingCompanyApi.csproj", "{C7F47F9B-D957-4FAE-97AB-AF3FBB97A895}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.Shipping.Consumer", "ShippingProjects\Narivo.Shipping.Consumer\Narivo.Shipping.Consumer.csproj", "{6ACD7086-55A5-4F88-8506-CCC28CDF9FD7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Narivo.Shipping.Core", "ShippingProjects\Narivo.Shipping.Core\Narivo.Shipping.Core.csproj", "{36D8BDC4-BD56-42A4-93E2-E91EC2E6E943}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +100,22 @@ Global
 		{82989858-A4FD-45F6-B420-391DC3D2867F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82989858-A4FD-45F6-B420-391DC3D2867F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82989858-A4FD-45F6-B420-391DC3D2867F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3E1AB37-32AF-4EC6-828C-F6FF04CE9307}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3E1AB37-32AF-4EC6-828C-F6FF04CE9307}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3E1AB37-32AF-4EC6-828C-F6FF04CE9307}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3E1AB37-32AF-4EC6-828C-F6FF04CE9307}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7F47F9B-D957-4FAE-97AB-AF3FBB97A895}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7F47F9B-D957-4FAE-97AB-AF3FBB97A895}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7F47F9B-D957-4FAE-97AB-AF3FBB97A895}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7F47F9B-D957-4FAE-97AB-AF3FBB97A895}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ACD7086-55A5-4F88-8506-CCC28CDF9FD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ACD7086-55A5-4F88-8506-CCC28CDF9FD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ACD7086-55A5-4F88-8506-CCC28CDF9FD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ACD7086-55A5-4F88-8506-CCC28CDF9FD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36D8BDC4-BD56-42A4-93E2-E91EC2E6E943}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36D8BDC4-BD56-42A4-93E2-E91EC2E6E943}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36D8BDC4-BD56-42A4-93E2-E91EC2E6E943}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36D8BDC4-BD56-42A4-93E2-E91EC2E6E943}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,6 +131,10 @@ Global
 		{88AC048F-A2D1-4931-919C-066506DF0E50} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{47915429-7FBB-433C-8B95-BB1BD62A97B7} = {2294CBD9-EB8C-46F0-BBAA-E0FC8C3CC868}
 		{82989858-A4FD-45F6-B420-391DC3D2867F} = {2B946736-2752-4DFE-AAC7-3503743F00AB}
+		{F3E1AB37-32AF-4EC6-828C-F6FF04CE9307} = {F704F82B-5778-40A4-B98D-BF7674F6615E}
+		{C7F47F9B-D957-4FAE-97AB-AF3FBB97A895} = {F704F82B-5778-40A4-B98D-BF7674F6615E}
+		{6ACD7086-55A5-4F88-8506-CCC28CDF9FD7} = {F704F82B-5778-40A4-B98D-BF7674F6615E}
+		{36D8BDC4-BD56-42A4-93E2-E91EC2E6E943} = {F704F82B-5778-40A4-B98D-BF7674F6615E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2FED4207-0AAA-41E8-A07D-827C62A1A6E6}

@@ -47,5 +47,62 @@ services:
     depends_on:
       - kafka
 
+  eventstore:
+    image: eventstore/eventstore:22.10.0-buster-slim
+    container_name: eventstore
+    environment:
+      # Database path
+      EVENTSTORE_DB: /var/lib/eventstore
+
+      # Projections
+      EVENTSTORE_RUN_PROJECTIONS: "All"
+      EVENTSTORE_START_STANDARD_PROJECTIONS: "true"
+
+      # TCP / HTTP
+      EVENTSTORE_EXT_TCP_PORT: 1113
+      EVENTSTORE_INT_TCP_PORT: 1112
+      EVENTSTORE_ENABLE_EXTERNAL_TCP: "true"
+      EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP: "true"
+
+      # Insecure mode (no authentication / TLS)
+      EVENTSTORE_INSECURE: "true"
+
+      # Logging
+      EVENTSTORE_LOG_LEVEL: "Debug"
+
+    ports:
+      - "2113:2113"
+      - "1113:1113"
+      - "1112:1112"
+
+    volumes:
+      - eventstore_data:/var/lib/eventstore
+      - eventstore_logs:/var/log/eventstore
+  jaeger:
+    image: jaegertracing/all-in-one:1.49
+    container_name: jaeger
+    ports:
+      - "6831:6831/udp"   # OTLP / Jaeger agent
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"     # Jaeger UI
+      - "14268:14268"
+      - "14250:14250"
+      - "9411:9411"
+    environment:
+      COLLECTOR_ZIPKIN_HTTP_PORT: 9411
+
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    depends_on:
+      - jaeger
 volumes:
   mssql_data:
+  eventstore_data:
+  eventstore_logs:

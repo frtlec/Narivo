@@ -14,7 +14,7 @@ namespace Narivo.Shared.Kafka
             _settings = options.Value;
         }
 
-        public async Task ProduceAsync<T>(T message, string topic) where T : class
+        public async Task ProduceAsync<T>(string topic,T message) where T : class
         {
             var json = JsonSerializer.Serialize(message);
 

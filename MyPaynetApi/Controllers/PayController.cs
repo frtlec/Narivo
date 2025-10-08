@@ -16,11 +16,12 @@ public class PayController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] PayRequestDto pay)
     {
+        if (FailCards.Contains(pay.CardInfo.CardNumber))
+            return BadRequest("Ödeme işlemi yapılmadı, kart limiti yetersiz");
         if (_dbContext.Pays.Any(f => f.RequestUniqueId == pay.UniqueId))
             return BadRequest("Ödeme işlemi daha önce yapılmış");
 
-        if (FailCards.Contains(pay.CardInfo.CardNumber))
-            return BadRequest("Ödeme işlemi yapılmadı, kart limiti yetersiz");
+    
 
 
         Guid transactionId = Guid.NewGuid();
@@ -60,7 +61,7 @@ public class PayController : ControllerBase
 
     private List<string> FailCards = new List<string>
         {
-            "5890040000000016",
+            "4000111133335555",
             "5555666677778888",
             "9999000011112222"
         };

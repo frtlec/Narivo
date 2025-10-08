@@ -7,15 +7,16 @@ using Narivo.Checkout.Core.Clients.RefitClients;
 using Narivo.Checkout.Core.Infastructure.Entites;
 using Narivo.Checkout.Core.Infastructure.Persistence;
 using Narivo.Shared.Exceptions;
+using System.Net;
 
 namespace Narivo.Checkout.Core.Business.Services
 {
     public interface IOrderService
     {
-        public Task<int> Create(CreateOrderRequestDto createOrderRequestDto);
-        public Task<OrderDto> Get(int id);
-        public Task<List<OrderDto>> GetAllByMemberId(int memberId);
-
+        Task<int> Create(CreateOrderRequestDto createOrderRequestDto);
+        Task<OrderDto> Get(int id);
+        Task<List<OrderDto>> GetAllByMemberId(int memberId);
+        Task SetShipmentTrackingId(int orderId, string trackingCode);
 
     }
     public class OrderService : IOrderService
@@ -41,7 +42,7 @@ namespace Narivo.Checkout.Core.Business.Services
         }
         public async Task<OrderDto> Get(int id)
         {
-            var order = await _appDbContext.Orders.Include(f => f.Items).FirstOrDefaultAsync(o => o.Id == id);
+            var order = await _appDbContext.Orders.Include(f => f.Payment).Include(f => f.Items).FirstOrDefaultAsync(o => o.Id == id);
             if (order == null)
                 throw new AppException("Sipariş bulunamadı", System.Net.HttpStatusCode.NotFound);
             return new OrderDto(order);
@@ -49,10 +50,19 @@ namespace Narivo.Checkout.Core.Business.Services
 
         public async Task<List<OrderDto>> GetAllByMemberId(int memberId)
         {
-            var orders = await _appDbContext.Orders.Include(f => f.Items).Where(o => o.MemberId == memberId).ToListAsync();
+            var orders = await _appDbContext.Orders.Include(f => f.Items).Where(o => o.MemberId == memberId).OrderByDescending(f => f.Id).ToListAsync();
             return orders.Select(o => new OrderDto(o)).ToList();
         }
 
+        public async Task SetShipmentTrackingId(int orderId, string trackingCode)
+        {
+            var order = await _appDbContext.Orders.FirstOrDefaultAsync(f => f.Id == orderId) ?? throw new AppException($"{orderId},Sipariş bulunamadı", HttpStatusCode.NotFound);
+            order.ShipmentTrackingCode = trackingCode;
+            await _appDbContext.SaveChangesAsync();
+        }
+
+
+        //private methods
         private async Task<Order> GenerateOrder(CreateOrderRequestDto createOrderRequestDto)
         {
 
@@ -65,8 +75,10 @@ namespace Narivo.Checkout.Core.Business.Services
                 {
                     ProductId = item.ProductId,
                     ProductName = product.Name,
+                    ProductType = product.ProductType,
                     Quantity = item.Quantity,
-                    Price = product.UnitPrice * item.Quantity
+                    Price = product.UnitPrice * item.Quantity,
+                    Status = Infastructure.Enums.OrderItemStatus.Pending,
                 });
             }
 
@@ -81,6 +93,7 @@ namespace Narivo.Checkout.Core.Business.Services
                 UpdatedAt = DateTime.UtcNow
             };
         }
+
 
 
     }

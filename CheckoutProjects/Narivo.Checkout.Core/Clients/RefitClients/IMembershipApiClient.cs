@@ -5,7 +5,7 @@ using Refit;
 namespace Narivo.Checkout.Core.Clients.RefitClients;
 public interface IMembershipApiClient
 {
-    [Get("/api/cards")]
+    [Get("/api/cards/get")]
     Task<ApiResponse<GetCardResponseDto>> GetCard([Query] int memberId, [Query] int cardId);
 
     [Get("/api/members/getall")]

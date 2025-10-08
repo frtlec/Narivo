@@ -14,6 +14,8 @@ public class Address : BaseEntity
     public string County { get; set; }
     [Required, StringLength(100)]
     public string Town { get; set; }
+    [Required, StringLength(100)]
+    public string Street { get; set; }
     [Required, StringLength(4)]
     public string BuildingNo { get; set; }
     [Required, StringLength(4)]
